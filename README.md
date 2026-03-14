@@ -56,6 +56,22 @@ Any Home Assistant sensor entity works — including:
 - **Generic MQTT sensors**
 - **iSpindel** or other Bluetooth/Wi-Fi hydrometers exposed as HA sensors
 
+## Dashboard
+
+A pre-built brew dashboard is included in the `dashboards/` folder. It requires [apexcharts-card](https://github.com/RomRider/apexcharts-card) to be installed via HACS first.
+
+To import it:
+
+1. Install `apexcharts-card` via HACS → Frontend if you haven't already
+2. Go to **Settings → Dashboards → Add Dashboard**
+3. Give it a name, enable **Show in sidebar**, and set it to YAML mode
+4. Open the dashboard, click the **pencil icon → three-dot menu → Edit in YAML**
+5. Paste the contents of `dashboards/brew_dashboard.yaml`
+6. Find and replace `new_norfolk_brown_ale` with your actual brew's entity slug (e.g. if your brew is called "Coopers Pale Ale" the slug will be `coopers_pale_ale`)
+7. Save
+
+Your brew slug can be confirmed by checking **Settings → Devices & Services → Home Brewing** and looking at the entity IDs listed there.
+
 ## Contributing
 
 Pull requests welcome. Please open an issue first for significant changes.
