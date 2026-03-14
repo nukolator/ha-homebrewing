@@ -107,3 +107,90 @@ class HomebrewingConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_USER_DATA_SCHEMA,
             errors=errors,
         )
+
+    @staticmethod
+    def async_get_options_flow(config_entry):
+        """Return the options flow handler."""
+        return HomebrewingOptionsFlow(config_entry)
+
+
+class HomebrewingOptionsFlow(config_entries.OptionsFlow):
+    """Handle options for an existing Home Brewing entry."""
+
+    def __init__(self, config_entry) -> None:
+        self._config_entry = config_entry
+
+    async def async_step_init(self, user_input=None):
+        """Manage the options."""
+        errors = {}
+        current = {**self._config_entry.data, **self._config_entry.options}
+
+        if user_input is not None:
+            if user_input[CONF_TARGET_TEMP_MIN] >= user_input[CONF_TARGET_TEMP_MAX]:
+                errors["base"] = "temp_range_invalid"
+            elif user_input[CONF_OG] <= user_input[CONF_FG]:
+                errors["base"] = "gravity_range_invalid"
+            else:
+                return self.async_create_entry(title="", data=user_input)
+
+        options_schema = vol.Schema(
+            {
+                vol.Required(CONF_OG, default=current.get(CONF_OG, DEFAULT_OG)): selector.selector(
+                    {
+                        "number": {
+                            "min": 1.000,
+                            "max": 1.120,
+                            "step": 0.001,
+                            "mode": "box",
+                        }
+                    }
+                ),
+                vol.Required(CONF_FG, default=current.get(CONF_FG, DEFAULT_FG)): selector.selector(
+                    {
+                        "number": {
+                            "min": 1.000,
+                            "max": 1.040,
+                            "step": 0.001,
+                            "mode": "box",
+                        }
+                    }
+                ),
+                vol.Required(CONF_TARGET_TEMP_MIN, default=current.get(CONF_TARGET_TEMP_MIN, DEFAULT_TARGET_TEMP_MIN)): selector.selector(
+                    {
+                        "number": {
+                            "min": 10,
+                            "max": 35,
+                            "step": 0.5,
+                            "mode": "slider",
+                            "unit_of_measurement": "°C",
+                        }
+                    }
+                ),
+                vol.Required(CONF_TARGET_TEMP_MAX, default=current.get(CONF_TARGET_TEMP_MAX, DEFAULT_TARGET_TEMP_MAX)): selector.selector(
+                    {
+                        "number": {
+                            "min": 10,
+                            "max": 35,
+                            "step": 0.5,
+                            "mode": "slider",
+                            "unit_of_measurement": "°C",
+                        }
+                    }
+                ),
+                vol.Required(CONF_SG_SENSOR, default=current.get(CONF_SG_SENSOR)): selector.selector(
+                    {"entity": {"domain": "sensor"}}
+                ),
+                vol.Required(CONF_TEMP_SENSOR, default=current.get(CONF_TEMP_SENSOR)): selector.selector(
+                    {"entity": {"domain": "sensor"}}
+                ),
+                vol.Required(CONF_HEATER_SWITCH, default=current.get(CONF_HEATER_SWITCH)): selector.selector(
+                    {"entity": {"domain": "switch"}}
+                ),
+            }
+        )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=options_schema,
+            errors=errors,
+        )

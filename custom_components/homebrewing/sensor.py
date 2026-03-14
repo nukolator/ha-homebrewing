@@ -29,7 +29,7 @@ class HomebrewingSensorBase(SensorEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, data: dict) -> None:
         self._hass = hass
         self._entry = entry
-        self._data = data
+        self._data = {**data, **entry.options}
         self._brew_name = data[CONF_BREW_NAME]
 
     @property

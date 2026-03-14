@@ -60,6 +60,10 @@ Any Home Assistant sensor entity works — including:
 
 Pull requests welcome. Please open an issue first for significant changes.
 
+## Credits
+
+Icon by [Dooder](https://www.flaticon.com/free-icons/foam) via Flaticon.
+
 ## License
 
 MIT
