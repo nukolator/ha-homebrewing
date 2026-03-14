@@ -1,0 +1,162 @@
+title: Brew Dashboard
+icon: mdi:beer
+path: brew
+type: panel
+cards:
+  - type: vertical-stack
+    cards:
+
+      # ─── Title ───────────────────────────────────────────────
+      - type: markdown
+        content: >
+          # 🍺 {{ states('sensor.new_norfolk_brown_ale_fermentation_progress') }}% Complete
+          **{{ state_attr('climate.new_norfolk_brown_ale_heater', 'friendly_name') }}**
+
+      # ─── Top Row: Progress + ABV ─────────────────────────────
+      - type: horizontal-stack
+        cards:
+
+          - type: custom:apexcharts-card
+            header:
+              show: true
+              title: Fermentation Progress
+              show_states: true
+            chart_type: radialBar
+            series:
+              - entity: sensor.new_norfolk_brown_ale_fermentation_progress
+                name: Progress
+                min: 0
+                max: 100
+            apex_config:
+              colors:
+                - "#f4a261"
+              plotOptions:
+                radialBar:
+                  hollow:
+                    size: "60%"
+                  dataLabels:
+                    name:
+                      show: false
+                    value:
+                      fontSize: "28px"
+                      fontWeight: bold
+
+          - type: custom:apexcharts-card
+            header:
+              show: true
+              title: Estimated ABV
+              show_states: true
+            chart_type: radialBar
+            series:
+              - entity: sensor.new_norfolk_brown_ale_estimated_abv
+                name: ABV
+                min: 0
+                max: 10
+            apex_config:
+              colors:
+                - "#e76f51"
+              plotOptions:
+                radialBar:
+                  hollow:
+                    size: "60%"
+                  dataLabels:
+                    name:
+                      show: false
+                    value:
+                      fontSize: "28px"
+                      fontWeight: bold
+
+      # ─── Middle Row: SG + Temperature ────────────────────────
+      - type: horizontal-stack
+        cards:
+
+          - type: custom:apexcharts-card
+            header:
+              show: true
+              title: Current SG
+              show_states: true
+            chart_type: radialBar
+            series:
+              - entity: sensor.tilt_yellow_gravity
+                name: SG
+                min: 1.000
+                max: 1.080
+            apex_config:
+              colors:
+                - "#2a9d8f"
+              plotOptions:
+                radialBar:
+                  hollow:
+                    size: "60%"
+                  dataLabels:
+                    name:
+                      show: false
+                    value:
+                      fontSize: "22px"
+                      fontWeight: bold
+
+          - type: custom:apexcharts-card
+            header:
+              show: true
+              title: Brew Temperature
+              show_states: true
+            chart_type: radialBar
+            series:
+              - entity: sensor.tilt_yellow_temperature
+                name: Temp
+                min: 10
+                max: 35
+            apex_config:
+              colors:
+                - "#264653"
+              plotOptions:
+                radialBar:
+                  hollow:
+                    size: "60%"
+                  dataLabels:
+                    name:
+                      show: false
+                    value:
+                      fontSize: "22px"
+                      fontWeight: bold
+
+      # ─── Heater Control ───────────────────────────────────────
+      - type: thermostat
+        entity: climate.new_norfolk_brown_ale_heater
+        name: Brew Heater
+
+      # ─── SG History Graph ─────────────────────────────────────
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Specific Gravity Over Time
+          show_states: true
+        graph_span: 7d
+        span:
+          end: day
+        series:
+          - entity: sensor.tilt_yellow_gravity
+            name: SG
+            stroke_width: 2
+            color: "#f4a261"
+            fill_raw: last
+        apex_config:
+          chart:
+            height: 250
+          xaxis:
+            labels:
+              format: "dd MMM"
+          yaxis:
+            min: 1.000
+            max: 1.060
+            decimals: 3
+          annotations:
+            yaxis:
+              - y: 1.010
+                borderColor: "#e76f51"
+                borderWidth: 2
+                strokeDashArray: 4
+                label:
+                  text: Target FG
+                  style:
+                    color: "#e76f51"
