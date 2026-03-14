@@ -1,0 +1,25 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set Up Your Home Brew",
+        "description": "Enter the details for your current brew. You can link any SG and temperature sensor — Tilt or generic MQTT.",
+        "data": {
+          "brew_name": "Brew Name",
+          "kit_brand": "Kit Brand",
+          "original_gravity": "Original Gravity (OG)",
+          "final_gravity": "Expected Final Gravity (FG)",
+          "sg_sensor": "SG Sensor",
+          "temp_sensor": "Temperature Sensor",
+          "heater_switch": "Heater Switch",
+          "target_temp_min": "Target Temperature Min (°C)",
+          "target_temp_max": "Target Temperature Max (°C)"
+        }
+      }
+    },
+    "error": {
+      "temp_range_invalid": "Minimum temperature must be less than maximum temperature.",
+      "gravity_range_invalid": "Original gravity must be greater than expected final gravity."
+    }
+  }
+}
