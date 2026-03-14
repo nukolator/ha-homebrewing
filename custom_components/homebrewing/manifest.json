@@ -1,9 +1,9 @@
 {
   "domain": "homebrewing",
   "name": "Home Brewing",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "config_flow": true,
-  "documentation": "https://github.com/nukolator/ha-homebrewing",
+  "documentation": "https://nukolator.github.io/ha-homebrewing",
   "issue_tracker": "https://github.com/nukolator/ha-homebrewing/issues",
   "requirements": [],
   "dependencies": [],
