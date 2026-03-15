@@ -1,162 +1,122 @@
-title: Brew Dashboard
-icon: mdi:beer
-path: brew
-type: panel
-cards:
-  - type: vertical-stack
+views:
+  - title: Brew Dashboard
+    icon: mdi:beer
+    path: brew
+    type: panel
     cards:
-
-      # ─── Title ───────────────────────────────────────────────
-      - type: markdown
-        content: >
-          # 🍺 {{ states('sensor.homebrewing_fermentation_progress') }}% Complete
-          **{{ state_attr('climate.homebrewing_heater', 'friendly_name') }}**
-
-      # ─── Top Row: Progress + ABV ─────────────────────────────
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
-
-          - type: custom:apexcharts-card
-            header:
-              show: true
-              title: Fermentation Progress
-              show_states: true
-            chart_type: radialBar
-            series:
-              - entity: sensor.homebrewing_fermentation_progress
-                name: Progress
+          - type: markdown
+            content: |
+              # 🍺 {{ state_attr('sensor.homebrewing_fermentation_progress', 'friendly_name') | replace(' Fermentation Progress', '') }}
+              ## {{ states('sensor.homebrewing_fermentation_progress') }}% Complete
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.homebrewing_fermentation_progress
+                name: Fermentation Progress
                 min: 0
                 max: 100
-            apex_config:
-              colors:
-                - "#f4a261"
-              plotOptions:
-                radialBar:
-                  hollow:
-                    size: "60%"
-                  dataLabels:
-                    name:
-                      show: false
-                    value:
-                      fontSize: "28px"
-                      fontWeight: bold
-
-          - type: custom:apexcharts-card
-            header:
-              show: true
-              title: Estimated ABV
-              show_states: true
-            chart_type: radialBar
-            series:
-              - entity: sensor.homebrewing_estimated_abv
-                name: ABV
+                unit: "%"
+                needle: true
+                severity:
+                  green: 0
+                  yellow: 50
+                  red: 80
+              - type: gauge
+                entity: sensor.homebrewing_estimated_abv
+                name: Estimated ABV
                 min: 0
                 max: 10
-            apex_config:
-              colors:
-                - "#e76f51"
-              plotOptions:
-                radialBar:
-                  hollow:
-                    size: "60%"
-                  dataLabels:
-                    name:
-                      show: false
-                    value:
-                      fontSize: "28px"
-                      fontWeight: bold
-
-      # ─── Middle Row: SG + Temperature ────────────────────────
-      - type: horizontal-stack
-        cards:
-
+                unit: "%"
+                needle: true
+                severity:
+                  green: 0
+                  yellow: 4
+                  red: 7
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.tilt_yellow_gravity
+                name: Current SG
+                min: 1.000
+                max: 1.080
+                needle: true
+                severity:
+                  green: 1.000
+                  yellow: 1.020
+                  red: 1.040
+              - type: gauge
+                entity: sensor.tilt_yellow_temperature
+                name: Brew Temperature
+                min: 10
+                max: 35
+                unit: "°C"
+                needle: true
+                severity:
+                  green: 18
+                  yellow: 24
+                  red: 28
+          - type: thermostat
+            entity: climate.homebrewing_heater
+            name: Brew Heater
           - type: custom:apexcharts-card
             header:
               show: true
-              title: Current SG
+              title: Current SG (24h)
               show_states: true
-            chart_type: radialBar
+            graph_span: 24h
             series:
               - entity: sensor.tilt_yellow_gravity
                 name: SG
-                min: 1.000
-                max: 1.080
+                stroke_width: 2
+                color: "#2a9d8f"
+                fill_raw: last
+                unit: " SG"
+                float_precision: 3
             apex_config:
-              colors:
-                - "#2a9d8f"
-              plotOptions:
-                radialBar:
-                  hollow:
-                    size: "60%"
-                  dataLabels:
-                    name:
-                      show: false
-                    value:
-                      fontSize: "22px"
-                      fontWeight: bold
-
+              chart:
+                height: 150
+              yaxis:
+                min: 1.005
+                max: 1.045
+                decimals: 3
+              xaxis:
+                labels:
+                  show: false
           - type: custom:apexcharts-card
             header:
               show: true
-              title: Brew Temperature
+              title: Specific Gravity Over Time
               show_states: true
-            chart_type: radialBar
+            graph_span: 7d
+            span:
+              end: day
             series:
-              - entity: sensor.tilt_yellow_temperature
-                name: Temp
-                min: 10
-                max: 35
+              - entity: sensor.tilt_yellow_gravity
+                name: SG
+                stroke_width: 2
+                color: "#f4a261"
+                fill_raw: last
+                unit: " SG"
+                float_precision: 3
             apex_config:
-              colors:
-                - "#264653"
-              plotOptions:
-                radialBar:
-                  hollow:
-                    size: "60%"
-                  dataLabels:
-                    name:
-                      show: false
-                    value:
-                      fontSize: "22px"
-                      fontWeight: bold
-
-      # ─── Heater Control ───────────────────────────────────────
-      - type: thermostat
-        entity: climate.homebrewing_heater
-        name: Brew Heater
-
-      # ─── SG History Graph ─────────────────────────────────────
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Specific Gravity Over Time
-          show_states: true
-        graph_span: 7d
-        span:
-          end: day
-        series:
-          - entity: sensor.tilt_yellow_gravity
-            name: SG
-            stroke_width: 2
-            color: "#f4a261"
-            fill_raw: last
-        apex_config:
-          chart:
-            height: 250
-          xaxis:
-            labels:
-              format: "dd MMM"
-          yaxis:
-            min: 1.000
-            max: 1.060
-            decimals: 3
-          annotations:
-            yaxis:
-              - y: 1.010
-                borderColor: "#e76f51"
-                borderWidth: 2
-                strokeDashArray: 4
-                label:
-                  text: Target FG
-                  style:
-                    color: "#e76f51"
+              chart:
+                height: 250
+              xaxis:
+                labels:
+                  format: "dd MMM"
+              yaxis:
+                min: 1.005
+                max: 1.045
+                decimals: 3
+              annotations:
+                yaxis:
+                  - y: 1.010
+                    borderColor: "#e76f51"
+                    borderWidth: 2
+                    strokeDashArray: 4
+                    label:
+                      text: Target FG
+                      style:
+                        color: "#e76f51"
