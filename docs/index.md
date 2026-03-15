@@ -96,6 +96,29 @@ Any Home Assistant sensor entity works, including:
 
 ---
 
+## Using a Tilt Hydrometer via MQTT
+
+The Tilt Hydrometer is a Bluetooth-enabled floating sensor that continuously measures the specific gravity and temperature of your wort. To get its readings into Home Assistant, you need a Raspberry Pi (or similar device) running TiltPi or a compatible MQTT bridge in the same room as your fermenter. This device listens for the Tilt's Bluetooth broadcasts and republishes them as MQTT messages on your local network, where Home Assistant's MQTT integration can receive them.
+
+To expose the Tilt data as Home Assistant sensor entities, add the following to your `configuration.yaml` — or better, into a dedicated package file such as `packages/homebrewing.yaml`. Adjust the topic names to match your TiltPi configuration and substitute the correct Tilt colour for your device (Yellow, Red, Green, Black, Purple, Orange, Blue, or Pink):
+
+```yaml
+mqtt:
+  sensor:
+    - name: "Tilt Yellow Temperature"
+      state_topic: "tilt/yellow/temperature"
+      unit_of_measurement: "°C"
+      device_class: temperature
+
+    - name: "Tilt Yellow Gravity"
+      state_topic: "tilt/yellow/gravity"
+      unit_of_measurement: "SG"
+```
+
+Once these sensors are reporting data in Home Assistant, you can select them as the **SG Sensor** and **Temperature Sensor** when setting up or reconfiguring the Home Brewing integration. The integration will then reactively update its calculations whenever a new reading arrives via MQTT — no polling required.
+
+---
+
 ## Credits
 
 Icon by [Dooder](https://www.flaticon.com/free-icons/foam) via Flaticon.

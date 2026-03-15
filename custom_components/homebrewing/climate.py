@@ -54,6 +54,7 @@ class BrewHeaterClimate(ClimateEntity):
         self._attr_target_temperature_high = float(data[CONF_TARGET_TEMP_MAX])
         self._attr_current_temperature = None
         self._attr_hvac_action = HVACAction.IDLE
+        self.entity_id = "climate.homebrewing_heater"
 
     @property
     def device_info(self):

@@ -73,6 +73,7 @@ class FermentationProgressSensor(HomebrewingSensorBase):
         self._attr_name = f"{self._brew_name} Fermentation Progress"
         self._attr_unique_id = f"{entry.entry_id}_fermentation_progress"
         self._attr_native_value = None
+        self.entity_id = "sensor.homebrewing_fermentation_progress"
 
     def _update(self) -> None:
         og = float(self._data[CONF_OG])
@@ -105,6 +106,7 @@ class EstimatedABVSensor(HomebrewingSensorBase):
         self._attr_name = f"{self._brew_name} Estimated ABV"
         self._attr_unique_id = f"{entry.entry_id}_estimated_abv"
         self._attr_native_value = None
+        self.entity_id = "sensor.homebrewing_estimated_abv"
 
     def _update(self) -> None:
         og = float(self._data[CONF_OG])
