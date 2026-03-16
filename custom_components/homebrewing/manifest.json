@@ -1,7 +1,7 @@
 {
   "domain": "homebrewing",
   "name": "Home Brewing",
-  "version": "1.0.13",
+  "version": "1.0.15",
   "config_flow": true,
   "documentation": "https://nukolator.github.io/ha-homebrewing",
   "issue_tracker": "https://github.com/nukolator/ha-homebrewing/issues",
