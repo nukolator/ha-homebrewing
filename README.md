@@ -1,85 +1,61 @@
-# Home Brewing — Home Assistant Integration
+# ha-homebrewing
 
-A Home Assistant integration for tracking home brew fermentation progress using Tilt or generic MQTT sensors, with thermostat-style heater control.
+A Home Assistant integration designed for using canned brews and simple gear to monitor and automate your brew.
 
-## Features
+Supports Tilt and generic MQTT sensors — any HA sensor entity can be used for SG and temperature.
 
-- **Fermentation Progress** — tracks gravity drop from OG to FG as a percentage
-- **Estimated ABV** — calculates current estimated alcohol by volume
-- **Heater Control** — thermostat-style climate entity to control a brew heater switch within a target temperature range
-- **Supports Tilt and generic MQTT sensors** — any HA sensor entity can be used for SG and temperature
+---
 
-## Installation via HACS
+## Installation
 
-1. In HACS, go to **Integrations** → **Custom Repositories**
-2. Add this repo URL and select **Integration** as the category
-3. Install **Home Brewing** from HACS
-4. Restart Home Assistant
-
-## Configuration
+In HACS, go to **Integrations → Custom Repositories**, add this repo URL and select **Integration** as the category.
 
 After installation, go to **Settings → Devices & Services → Add Integration** and search for **Home Brewing**.
 
-You will be prompted to enter:
+You'll be prompted for:
+- A name for this brew (e.g. `Coopers Pale Ale`)
+- Your SG sensor entity
+- Your temperature sensor entity
+- Original gravity (OG) and target final gravity (FG)
 
-| Field | Description |
-|---|---|
-| Brew Name | A name for this brew (e.g. "Coopers Pale Ale") |
-| Kit Brand | Coopers, Morgan's, Black Rock, Brigalow, or Other |
-| Original Gravity (OG) | The starting SG of your wort |
-| Expected Final Gravity (FG) | The target SG at end of fermentation |
-| SG Sensor | Any HA sensor entity reporting specific gravity |
-| Temperature Sensor | Any HA sensor entity reporting temperature (°C) |
-| Heater Switch | The switch entity controlling your brew heater |
-| Target Temp Min | Lower bound of your fermentation temperature range |
-| Target Temp Max | Upper bound of your fermentation temperature range |
-
-## Entities Created
-
-| Entity | Type | Description |
-|---|---|---|
-| `sensor.<brew_name>_fermentation_progress` | Sensor | % complete based on gravity drop |
-| `sensor.<brew_name>_estimated_abv` | Sensor | Estimated ABV % |
-| `climate.<brew_name>_heater` | Climate | Thermostat controlling the heater switch |
-
-## Heater Control Logic
-
-The climate entity operates in **HEAT** or **OFF** mode:
-- When temperature drops below **Target Temp Min**, the heater switch turns **on**
-- When temperature reaches **Target Temp Max**, the heater switch turns **off**
-- Setting the mode to **OFF** turns the heater off immediately
-
-## Supported Sensors
-
-Any Home Assistant sensor entity works — including:
-- **Tilt Hydrometer** (via MQTT)
-- **Generic MQTT sensors**
-- **iSpindel** or other Bluetooth/Wi-Fi hydrometers exposed as HA sensors
+---
 
 ## Dashboard
 
-A pre-built brew dashboard is included in the `dashboards/` folder. It requires [apexcharts-card](https://github.com/RomRider/apexcharts-card) to be installed via HACS first.
+A pre-built brew dashboard is included in the `dashboards/` folder.
 
-To import it:
+### Prerequisites
 
-1. Install `apexcharts-card` via HACS → Frontend if you haven't already
-2. Go to **Settings → Dashboards → Add Dashboard**
-3. Give it a name, enable **Show in sidebar**, and set it to YAML mode
-4. Open the dashboard, click the **pencil icon → three-dot menu → Edit in YAML**
-5. Paste the contents of `dashboards/brew_dashboard.yaml`
-6. Find and replace `new_norfolk_brown_ale` with your actual brew's entity slug (e.g. if your brew is called "Coopers Pale Ale" the slug will be `coopers_pale_ale`)
-7. Save
+Install the following via HACS before importing the dashboard:
+
+- **[apexcharts-card](https://github.com/RomRider/apexcharts-card)** — used for the SG history charts
+
+### Beer glass card (bundled)
+
+The dashboard uses a custom Lovelace card (`www/brew-glass-card.js`) that displays fermentation progress, estimated ABV, and brew temperature as animated beer glass fill indicators.
+
+**To install:**
+
+1. Copy `www/brew-glass-card.js` from this repo to `/config/www/` on your Home Assistant instance.
+2. In HA, go to **Settings → Dashboards**, open the three-dot menu and select **Resources**.
+3. Click **Add resource** and enter:
+   - URL: `/local/brew-glass-card.js`
+   - Resource type: **JavaScript module**
+4. Reload the browser.
+
+The card is configured in the dashboard YAML automatically — no extra setup needed once the resource is registered.
+
+### Importing the dashboard
+
+1. Go to **Settings → Dashboards → Add Dashboard**.
+2. Choose **Start with an empty dashboard**, then open the three-dot menu and select **Edit → Raw configuration editor**.
+3. Paste the contents of `dashboards/dashboard.yaml`.
+4. Find and replace `new_norfolk_brown_ale` with your actual brew's entity slug (e.g. if your brew is called `Coopers Pale Ale` the slug will be `coopers_pale_ale`).
 
 Your brew slug can be confirmed by checking **Settings → Devices & Services → Home Brewing** and looking at the entity IDs listed there.
+
+---
 
 ## Contributing
 
 Pull requests welcome. Please open an issue first for significant changes.
-
-## Credits
-
-Icon by [Dooder](https://www.flaticon.com/free-icons/foam) via Flaticon.
-
-## License
-
-MIT

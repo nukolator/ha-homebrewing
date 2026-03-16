@@ -10,60 +10,38 @@ views:
             content: |
               # 🍺 {{ state_attr('sensor.homebrewing_fermentation_progress', 'friendly_name') | replace(' Fermentation Progress', '') }}
               ## {{ states('sensor.homebrewing_fermentation_progress') }}% Complete
-          - type: horizontal-stack
-            cards:
-              - type: gauge
-                entity: sensor.homebrewing_fermentation_progress
-                name: Fermentation Progress
+
+          - type: custom:brew-glass-card
+            glasses:
+              - entity: sensor.homebrewing_fermentation_progress
+                name: Fermentation
                 min: 0
                 max: 100
                 unit: "%"
-                needle: true
-                severity:
-                  green: 0
-                  yellow: 50
-                  red: 80
-              - type: gauge
-                entity: sensor.homebrewing_estimated_abv
-                name: Estimated ABV
+                precision: 0
+                beer_color: "#C97510"
+                foam_color: "#FAE8B4"
+              - entity: sensor.homebrewing_estimated_abv
+                name: Est. ABV
                 min: 0
                 max: 10
                 unit: "%"
-                needle: true
-                severity:
-                  green: 0
-                  yellow: 4
-                  red: 7
-          - type: horizontal-stack
-            cards:
-              - type: gauge
-                entity: sensor.tilt_yellow_gravity
-                name: Current SG
-                min: 1.000
-                max: 1.080
-                needle: true
-                severity:
-                  green: 1.000
-                  yellow: 1.020
-                  red: 1.040
-              - type: gauge
-                entity: sensor.tilt_yellow_temperature
-                name: Brew Temperature
+                precision: 2
+                beer_color: "#8B3A0F"
+                foam_color: "#FFD0C0"
+              - entity: sensor.tilt_yellow_temperature
+                name: Temperature
                 min: 10
                 max: 35
                 unit: "°C"
-                needle: true
-                severity:
-                  green: 18
-                  yellow: 24
-                  red: 28
-          - type: thermostat
-            entity: climate.homebrewing_heater
-            name: Brew Heater
+                precision: 1
+                beer_color: "#EDAF1A"
+                foam_color: "#FFF9D0"
+
           - type: custom:apexcharts-card
             header:
               show: true
-              title: Current SG (24h)
+              title: Current SG
               show_states: true
             graph_span: 24h
             series:
@@ -84,6 +62,11 @@ views:
               xaxis:
                 labels:
                   show: false
+
+          - type: thermostat
+            entity: climate.homebrewing_heater
+            name: Brew Heater
+
           - type: custom:apexcharts-card
             header:
               show: true
