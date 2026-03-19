@@ -1,0 +1,24 @@
+alert:
+  fermentation_complete:
+    name: "🍺 Fermentation Complete"
+    entity_id: binary_sensor.homebrewing_fermentation_complete
+    state: "on"
+    repeat: 1440
+    can_acknowledge: true
+    skip_first: false
+    notifiers:
+      - persistent_notification
+    message: >
+      Your brew has reached its final gravity. Current SG is within 0.002 of
+      your target FG. Time to cold crash or bottle!
+
+binary_sensor:
+  - platform: template
+    sensors:
+      homebrewing_fermentation_complete:
+        friendly_name: "Fermentation Complete"
+        value_template: >
+          {% set current = states('sensor.tilt_yellow_gravity') | float(0) %}
+          {% set fg = 1.010 %}
+          {{ current > 0 and current <= (fg + 0.002) }}
+        device_class: problem

@@ -10,38 +10,82 @@ views:
             content: |
               # 🍺 {{ state_attr('sensor.homebrewing_fermentation_progress', 'friendly_name') | replace(' Fermentation Progress', '') }}
               ## {{ states('sensor.homebrewing_fermentation_progress') }}% Complete
-
-          - type: custom:brew-glass-card
-            glasses:
-              - entity: sensor.homebrewing_fermentation_progress
-                name: Fermentation
-                min: 0
-                max: 100
-                unit: "%"
-                precision: 0
-                beer_color: "#C97510"
-                foam_color: "#FAE8B4"
-              - entity: sensor.homebrewing_estimated_abv
-                name: Est. ABV
-                min: 0
-                max: 10
-                unit: "%"
-                precision: 2
-                beer_color: "#8B3A0F"
-                foam_color: "#FFD0C0"
-              - entity: sensor.tilt_yellow_temperature
-                name: Temperature
-                min: 10
-                max: 35
-                unit: "°C"
-                precision: 1
-                beer_color: "#EDAF1A"
-                foam_color: "#FFF9D0"
-
+          - type: custom:bar-card
+            name: Fermentation Progress
+            entity: sensor.homebrewing_fermentation_progress
+            min: 0
+            max: 100
+            height: 40px
+            positions:
+              icon: "off"
+              indicator: "off"
+              name: outside
+              value: outside
+            severity:
+              - color: "#f4a261"
+                from: 0
+                to: 100
+            style: |
+              bar-card-background {
+                border-radius: 6px;
+              }
+              bar-card-currentbar {
+                border-radius: 6px;
+              }
+          - type: custom:bar-card
+            name: Estimated ABV
+            entity: sensor.homebrewing_estimated_abv
+            min: 0
+            max: 10
+            height: 40px
+            positions:
+              icon: "off"
+              indicator: "off"
+              name: outside
+              value: outside
+            severity:
+              - color: "#e76f51"
+                from: 0
+                to: 10
+            style: |
+              bar-card-background {
+                border-radius: 6px;
+              }
+              bar-card-currentbar {
+                border-radius: 6px;
+              }
+          - type: custom:bar-card
+            name: Brew Temperature
+            entity: sensor.tilt_yellow_temperature
+            min: 10
+            max: 35
+            height: 40px
+            positions:
+              icon: "off"
+              indicator: "off"
+              name: outside
+              value: outside
+            severity:
+              - color: "#2a9d8f"
+                from: 10
+                to: 24
+              - color: "#e9c46a"
+                from: 24
+                to: 28
+              - color: "#e63946"
+                from: 28
+                to: 35
+            style: |
+              bar-card-background {
+                border-radius: 6px;
+              }
+              bar-card-currentbar {
+                border-radius: 6px;
+              }
           - type: custom:apexcharts-card
             header:
               show: true
-              title: Current SG
+              title: Current SG (24h)
               show_states: true
             graph_span: 24h
             series:
@@ -62,11 +106,9 @@ views:
               xaxis:
                 labels:
                   show: false
-
           - type: thermostat
             entity: climate.homebrewing_heater
             name: Brew Heater
-
           - type: custom:apexcharts-card
             header:
               show: true

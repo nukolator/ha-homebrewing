@@ -1,6 +1,4 @@
 """Climate platform for Home Brewing heater control."""
-import time
-
 from homeassistant.components.climate import (
     ClimateEntity,
     ClimateEntityFeature,
@@ -22,9 +20,6 @@ from .const import (
     CONF_TARGET_TEMP_MIN,
     CONF_TARGET_TEMP_MAX,
 )
-
-# Minimum seconds between heater switch events to protect the power switch
-MIN_SWITCH_INTERVAL = 300  # 5 minutes
 
 
 async def async_setup_entry(
@@ -60,7 +55,6 @@ class BrewHeaterClimate(ClimateEntity):
         self._attr_current_temperature = None
         self._attr_hvac_action = HVACAction.IDLE
         self.entity_id = "climate.homebrewing_heater"
-        self._last_switch_time: float = 0.0  # epoch seconds of last heater switch
 
     @property
     def device_info(self):
@@ -111,12 +105,7 @@ class BrewHeaterClimate(ClimateEntity):
             self._apply_thermostat_logic()
 
     def _apply_thermostat_logic(self) -> None:
-        """Turn heater on/off based on temperature vs target range.
-
-        A minimum switch interval guards against rapid on/off cycling when the
-        temperature is close to either threshold, protecting the power switch
-        from excessive switching stress.
-        """
+        """Turn heater on/off based on temperature vs target range."""
         temp = self._attr_current_temperature
         low = self._attr_target_temperature_low
         high = self._attr_target_temperature_high
@@ -124,28 +113,13 @@ class BrewHeaterClimate(ClimateEntity):
         switch_state = self._hass.states.get(switch)
         heater_on = switch_state and switch_state.state == "on"
 
-        want_on = temp < low and not heater_on
-        want_off = temp >= high and heater_on
-
-        if not (want_on or want_off):
-            return
-
-        now = time.monotonic()
-        elapsed = now - self._last_switch_time
-
-        if elapsed < MIN_SWITCH_INTERVAL:
-            # Too soon — skip this switch to protect the power switch
-            return
-
-        self._last_switch_time = now
-
-        if want_on:
+        if temp < low and not heater_on:
             self._hass.async_create_task(
                 self._hass.services.async_call(
                     "switch", "turn_on", {"entity_id": switch}
                 )
             )
-        else:
+        elif temp >= high and heater_on:
             self._hass.async_create_task(
                 self._hass.services.async_call(
                     "switch", "turn_off", {"entity_id": switch}
@@ -156,8 +130,6 @@ class BrewHeaterClimate(ClimateEntity):
         """Handle HVAC mode changes."""
         self._attr_hvac_mode = hvac_mode
         if hvac_mode == HVACMode.OFF:
-            # Bypass the switch interval — a manual OFF should always be respected
-            self._last_switch_time = 0.0
             await self._hass.services.async_call(
                 "switch", "turn_off", {"entity_id": self._data[CONF_HEATER_SWITCH]}
             )
