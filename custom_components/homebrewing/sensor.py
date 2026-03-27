@@ -1,11 +1,19 @@
 """Sensor platform for Home Brewing integration."""
+
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 
-from .const import DOMAIN, CONF_BREW_NAME, CONF_KIT_BRAND, CONF_OG, CONF_FG, CONF_SG_SENSOR
+from .const import (
+    DOMAIN,
+    CONF_BREW_NAME,
+    CONF_BEER_STYLE,
+    CONF_OG,
+    CONF_FG,
+    CONF_SG_SENSOR,
+)
 
 
 async def async_setup_entry(
@@ -37,8 +45,7 @@ class HomebrewingSensorBase(SensorEntity):
         return {
             "identifiers": {(DOMAIN, self._entry.entry_id)},
             "name": self._brew_name,
-            "manufacturer": self._data.get(CONF_KIT_BRAND, "Unknown"),
-            "model": "Home Brew",
+            "model": self._data.get(CONF_BEER_STYLE) or "Home Brew",
         }
 
     async def async_added_to_hass(self) -> None:

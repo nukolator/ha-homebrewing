@@ -1,4 +1,5 @@
 """Config flow for Home Brewing integration."""
+
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.helpers import selector
@@ -6,7 +7,7 @@ from homeassistant.helpers import selector
 from .const import (
     DOMAIN,
     CONF_BREW_NAME,
-    CONF_KIT_BRAND,
+    CONF_BEER_STYLE,
     CONF_OG,
     CONF_FG,
     CONF_SG_SENSOR,
@@ -14,7 +15,6 @@ from .const import (
     CONF_HEATER_SWITCH,
     CONF_TARGET_TEMP_MIN,
     CONF_TARGET_TEMP_MAX,
-    KIT_BRANDS,
     DEFAULT_OG,
     DEFAULT_FG,
     DEFAULT_TARGET_TEMP_MIN,
@@ -24,9 +24,7 @@ from .const import (
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_BREW_NAME): str,
-        vol.Required(CONF_KIT_BRAND): selector.selector(
-            {"select": {"options": KIT_BRANDS}}
-        ),
+        vol.Optional(CONF_BEER_STYLE, default=""): str,
         vol.Required(CONF_OG, default=DEFAULT_OG): selector.selector(
             {
                 "number": {
@@ -56,7 +54,9 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_HEATER_SWITCH): selector.selector(
             {"entity": {"domain": "switch"}}
         ),
-        vol.Required(CONF_TARGET_TEMP_MIN, default=DEFAULT_TARGET_TEMP_MIN): selector.selector(
+        vol.Required(
+            CONF_TARGET_TEMP_MIN, default=DEFAULT_TARGET_TEMP_MIN
+        ): selector.selector(
             {
                 "number": {
                     "min": 10,
@@ -67,7 +67,9 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
                 }
             }
         ),
-        vol.Required(CONF_TARGET_TEMP_MAX, default=DEFAULT_TARGET_TEMP_MAX): selector.selector(
+        vol.Required(
+            CONF_TARGET_TEMP_MAX, default=DEFAULT_TARGET_TEMP_MAX
+        ): selector.selector(
             {
                 "number": {
                     "min": 10,
@@ -135,7 +137,12 @@ class HomebrewingOptionsFlow(config_entries.OptionsFlow):
 
         options_schema = vol.Schema(
             {
-                vol.Required(CONF_OG, default=current.get(CONF_OG, DEFAULT_OG)): selector.selector(
+                vol.Optional(
+                    CONF_BEER_STYLE, default=current.get(CONF_BEER_STYLE, "")
+                ): str,
+                vol.Required(
+                    CONF_OG, default=current.get(CONF_OG, DEFAULT_OG)
+                ): selector.selector(
                     {
                         "number": {
                             "min": 1.000,
@@ -145,7 +152,9 @@ class HomebrewingOptionsFlow(config_entries.OptionsFlow):
                         }
                     }
                 ),
-                vol.Required(CONF_FG, default=current.get(CONF_FG, DEFAULT_FG)): selector.selector(
+                vol.Required(
+                    CONF_FG, default=current.get(CONF_FG, DEFAULT_FG)
+                ): selector.selector(
                     {
                         "number": {
                             "min": 1.000,
@@ -155,7 +164,10 @@ class HomebrewingOptionsFlow(config_entries.OptionsFlow):
                         }
                     }
                 ),
-                vol.Required(CONF_TARGET_TEMP_MIN, default=current.get(CONF_TARGET_TEMP_MIN, DEFAULT_TARGET_TEMP_MIN)): selector.selector(
+                vol.Required(
+                    CONF_TARGET_TEMP_MIN,
+                    default=current.get(CONF_TARGET_TEMP_MIN, DEFAULT_TARGET_TEMP_MIN),
+                ): selector.selector(
                     {
                         "number": {
                             "min": 10,
@@ -166,7 +178,10 @@ class HomebrewingOptionsFlow(config_entries.OptionsFlow):
                         }
                     }
                 ),
-                vol.Required(CONF_TARGET_TEMP_MAX, default=current.get(CONF_TARGET_TEMP_MAX, DEFAULT_TARGET_TEMP_MAX)): selector.selector(
+                vol.Required(
+                    CONF_TARGET_TEMP_MAX,
+                    default=current.get(CONF_TARGET_TEMP_MAX, DEFAULT_TARGET_TEMP_MAX),
+                ): selector.selector(
                     {
                         "number": {
                             "min": 10,
@@ -177,15 +192,15 @@ class HomebrewingOptionsFlow(config_entries.OptionsFlow):
                         }
                     }
                 ),
-                vol.Required(CONF_SG_SENSOR, default=current.get(CONF_SG_SENSOR)): selector.selector(
-                    {"entity": {"domain": "sensor"}}
-                ),
-                vol.Required(CONF_TEMP_SENSOR, default=current.get(CONF_TEMP_SENSOR)): selector.selector(
-                    {"entity": {"domain": "sensor"}}
-                ),
-                vol.Required(CONF_HEATER_SWITCH, default=current.get(CONF_HEATER_SWITCH)): selector.selector(
-                    {"entity": {"domain": "switch"}}
-                ),
+                vol.Required(
+                    CONF_SG_SENSOR, default=current.get(CONF_SG_SENSOR)
+                ): selector.selector({"entity": {"domain": "sensor"}}),
+                vol.Required(
+                    CONF_TEMP_SENSOR, default=current.get(CONF_TEMP_SENSOR)
+                ): selector.selector({"entity": {"domain": "sensor"}}),
+                vol.Required(
+                    CONF_HEATER_SWITCH, default=current.get(CONF_HEATER_SWITCH)
+                ): selector.selector({"entity": {"domain": "switch"}}),
             }
         )
 

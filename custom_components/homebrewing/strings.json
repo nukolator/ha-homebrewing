@@ -6,7 +6,7 @@
         "description": "Enter the details for your current brew. You can link any SG and temperature sensor — Tilt or generic MQTT.",
         "data": {
           "brew_name": "Brew Name",
-          "kit_brand": "Kit Brand",
+          "beer_style": "Beer Style",
           "original_gravity": "Original Gravity (OG)",
           "final_gravity": "Expected Final Gravity (FG)",
           "sg_sensor": "SG Sensor",
@@ -28,6 +28,7 @@
         "title": "Update Brew Settings",
         "description": "Update your gravity targets, temperature range, or sensor assignments.",
         "data": {
+          "beer_style": "Beer Style",
           "original_gravity": "Original Gravity (OG)",
           "final_gravity": "Expected Final Gravity (FG)",
           "sg_sensor": "SG Sensor",
