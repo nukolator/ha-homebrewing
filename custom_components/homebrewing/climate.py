@@ -1,4 +1,5 @@
 """Climate platform for Home Brewing heater control."""
+
 from homeassistant.components.climate import (
     ClimateEntity,
     ClimateEntityFeature,
@@ -14,7 +15,7 @@ from homeassistant.helpers.event import async_track_state_change_event
 from .const import (
     DOMAIN,
     CONF_BREW_NAME,
-    CONF_KIT_BRAND,
+    CONF_BEER_STYLE,
     CONF_TEMP_SENSOR,
     CONF_HEATER_SWITCH,
     CONF_TARGET_TEMP_MIN,
@@ -61,8 +62,7 @@ class BrewHeaterClimate(ClimateEntity):
         return {
             "identifiers": {(DOMAIN, self._entry.entry_id)},
             "name": self._brew_name,
-            "manufacturer": self._data.get(CONF_KIT_BRAND, "Unknown"),
-            "model": "Home Brew",
+            "model": self._data.get(CONF_BEER_STYLE) or "Home Brew",
         }
 
     async def async_added_to_hass(self) -> None:
@@ -93,9 +93,7 @@ class BrewHeaterClimate(ClimateEntity):
         switch_state = self._hass.states.get(self._data[CONF_HEATER_SWITCH])
         if switch_state:
             self._attr_hvac_action = (
-                HVACAction.HEATING
-                if switch_state.state == "on"
-                else HVACAction.IDLE
+                HVACAction.HEATING if switch_state.state == "on" else HVACAction.IDLE
             )
 
         if (
